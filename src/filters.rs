@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::collections::HashMap;
 use std::fmt::Debug;
 
@@ -21,14 +22,50 @@ pub enum Condition {
 
 pub struct Pattern {
     pub regex: String,
+    pub compiled: Regex,
     pub groups: Vec<String>,
+    all_groups: Vec<Option<String>>,
 }
 
 pub struct View(pub Vec<Operation>);
 
 impl Pattern {
+    pub fn new(regex: String) -> Pattern {
+        let compiled = Regex::new(&regex).expect("Invalid regex");
+        let all_groups: Vec<Option<String>> = compiled
+            .capture_names() // Option<&str>
+            .map(|v: Option<&str>| v.map(ToOwned::to_owned)) // Option<String>
+            .collect();
+        let groups = all_groups.iter()
+            .filter_map(|v| v.as_ref().cloned())
+            .collect();
+        Pattern {
+            regex,
+            compiled,
+            groups,
+            all_groups,
+        }
+    }
+
     pub fn match_string(&self, string: &String) -> Option<HashMap<String, String>> {
-        todo!() // Regex
+        match self.compiled.captures(string) {
+            Some(m) => {
+                let mut map: HashMap<String, String> = HashMap::new();
+                for (value, key) in m.iter().zip(&self.all_groups) {
+                    match (key, value) {
+                        (Some(key), Some(value)) => {
+                            map.insert(
+                                key.to_owned(),
+                                value.as_str().to_owned(),
+                            );
+                        }
+                        _ => {}
+                    }
+                }
+                Some(map)
+            }
+            None => None,
+        }
     }
 }
 

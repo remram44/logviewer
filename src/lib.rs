@@ -14,10 +14,7 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
         Operation::If(
             Condition::Match(
                 Expression::Record,
-                Pattern {
-                    regex: "^(?P<time>[0-9TZ-]+) (?P<message>.*)$".to_owned(),
-                    groups: vec!["time".to_owned(), "message".to_owned()],
-                },
+                Pattern::new("^(?P<time>[0-9TZ:-]+) (?P<message>.*)$".to_owned()),
             ),
             // Hash timestamp, then
             vec![
@@ -25,10 +22,7 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
                 Operation::If(
                     Condition::Match(
                         Expression::Var("message".to_owned()),
-                        Pattern {
-                            regex: "^(?P<client>[0-9]+(\\.[0-9]+){3}) ([^ ]+ ){2}\\[.+\\] \"(?P<vhost>[^\"]+)\"".to_owned(),
-                            groups: vec![],
-                        },
+                        Pattern::new("^(?P<client>[0-9]+(\\.[0-9]+){3}) ([^ ]+ ){2}\\[.+\\] \"(?P<vhost>[^\"]+)\"".to_owned()),
                     ),
                     // HTTP access, then
                     vec![
@@ -43,10 +37,7 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
                         Operation::If(
                             Condition::Match(
                                 Expression::Var("message".to_owned()),
-                                Pattern {
-                                    regex: "^service=(?P<service>[^ ]+) (?P<message>.*)$".to_owned(),
-                                    groups: vec!["service".to_owned()],
-                                },
+                                Pattern::new("^service=(?P<service>[^ ]+) (?P<message>.*)$".to_owned()),
                             ),
                             vec![],
                             vec![],
@@ -69,10 +60,7 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
         Operation::If(
             Condition::Match(
                 Expression::Record,
-                Pattern {
-                    regex: "\\bERROR\\b".to_owned(),
-                    groups: vec![],
-                },
+                Pattern::new("\\bERROR\\b".to_owned()),
             ),
             // Is error, then
             vec![
@@ -86,10 +74,7 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
                 Operation::If(
                     Condition::Match(
                         Expression::Record,
-                        Pattern {
-                            regex: "\\bDEBUG\\b".to_owned(),
-                            groups: vec![],
-                        },
+                        Pattern::new("\\bDEBUG\\b".to_owned()),
                     ),
                     vec![
                         Operation::SkipRecord,
