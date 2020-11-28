@@ -1,0 +1,10 @@
+2020-11-17T00:15:12Z 63.152.68.183 - - [27/Nov/2020:00:15:12 +0000] "example.org" "HEAD /api/metadata HTTP/1.1" 200 0 "https://example.org/api/metadata" "Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)"
+2020-11-17T00:15:12Z service=web getting metadata
+2020-11-17T00:30:56Z 66.249.75.119 - - [27/Nov/2020:00:30:56 +0000] "example.org" "GET / HTTP/1.1" 200 1192 "-" "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+2020-11-17T00:30:56Z service=web showing frontpage
+2020-11-17T00:30:56Z service=db querying
+2020-11-17T00:31:25Z 45.250.66.23 - - [27/Nov/2020:00:31:25 +0000] "example.org" "GET / HTTP/1.1" 301 194 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+2020-11-17T00:31:25Z service=web showing frontpage
+2020-11-17T00:31:25Z service=db querying
+2020-11-17T01:07:41Z 209.17.96.170 - - [27/Nov/2020:01:07:41 +0000] "example.org" "GET /about HTTP/1.0" 301 194 "-" "Mozilla/5.0 (compatible; Nimbostratus-Bot/v1.3.2; http://cloudsystemnetworks.com)"
+2020-11-17T01:07:41Z service=web showing about page
