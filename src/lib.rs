@@ -90,6 +90,12 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
 
     // Process records
     for record in process(file, view) {
+        let record = record?;
+        println!("{}", record.text);
+        for (key, value) in &record.variables {
+            println!("    {} = {:?}", key, value);
+        }
+        println!("");
     }
     Ok(())
 }
