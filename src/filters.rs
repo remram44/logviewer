@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 
 pub enum Operation {
@@ -24,6 +25,12 @@ pub struct Pattern {
 }
 
 pub struct View(pub Vec<Operation>);
+
+impl Pattern {
+    pub fn match_string(&self, string: &String) -> Option<HashMap<String, String>> {
+        todo!() // Regex
+    }
+}
 
 fn idt(f: &mut std::fmt::Formatter, indent: usize) -> std::fmt::Result {
     for _ in 0..indent {
