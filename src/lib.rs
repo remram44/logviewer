@@ -100,6 +100,9 @@ fn test_filter() -> Result<(), Box<dyn std::error::Error>> {
         ),
     ]);
 
+    // Pretty-print filters
+    println!("{:?}", view);
+
     // Process records
     for record in process(file, view) {
     }
