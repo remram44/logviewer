@@ -21,3 +21,8 @@ web = ["json", "tokio", "warp"]
 name = "logviewer"
 path = "src/web.rs"
 required-features = ["web"]
+
+[[bin]]
+name = "cli"
+path = "src/cli.rs"
+required-features = ["json"]
