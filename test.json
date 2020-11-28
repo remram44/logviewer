@@ -1,0 +1,97 @@
+{
+  "operations": [
+    {
+      "if": {
+        "match": {
+          "expression": {
+            "record": {}
+          },
+          "pattern": "^(?P<time>[0-9TZ-]+) (?P<message>.*)$"
+        },
+        "then": [
+          {
+            "if": {
+              "match": {
+                "expression": {
+                  "variable": "message"
+                },
+                "pattern": "^(?P<client>[0-9]+(\\.[0-9]+){3}) ([^ ]+ ){2}\\[.+\\] \"(?P<vhost>[^\"]+)\""
+              },
+              "then": [
+                {
+                  "set": {
+                    "target": "service",
+                    "expression": {
+                      "constant": "frontend"
+                    }
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "if": {
+                    "match": {
+                      "expression": {
+                        "variable": "message"
+                      },
+                      "pattern": "^service=(?P<service>[^ ]+) (?P<message>.*)$"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "colorBy": {
+              "variable": "service"
+            }
+          }
+        ],
+        "else": [
+          {
+            "set": {
+              "target": "time",
+              "expression": {
+                "lastVariableValue": "time"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "match": {
+          "expression": {
+            "record": {}
+          },
+          "pattern": "\\bERROR\\b"
+        },
+        "then": [
+          {
+            "set": {
+              "target": "error"
+            }
+          }
+        ],
+        "else": [
+          {
+            "if": {
+              "match": {
+                "expression": {
+                  "record": {}
+                },
+                "pattern": "\\bDEBUG\\b"
+              },
+              "then": [
+                {
+                  "skip": {}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

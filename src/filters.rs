@@ -1,6 +1,8 @@
 use regex::Regex;
 use std::collections::HashMap;
 use std::fmt::Debug;
+#[cfg(feature = "json")]
+use serde_json::Value;
 
 pub enum Operation {
     If(Condition, Vec<Operation>, Vec<Operation>),
@@ -166,11 +168,13 @@ impl Operation {
 }
 
 impl View {
-    pub fn from_json() -> View {
-        todo!() // JSON
+    #[cfg(feature = "json")]
+    pub fn from_json(json: &Value) -> Result<View, &'static str> {
+        crate::json::read_view(json)
     }
 
-    pub fn to_json(&self) {
+    #[cfg(feature = "json")]
+    pub fn to_json(&self) -> Value {
         todo!() // JSON
     }
 
