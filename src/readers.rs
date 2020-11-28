@@ -38,6 +38,12 @@ impl LogReader for LogFile {
             Ok(None)
         } else {
             self.pos += ret as u64;
+            if line.len() >= 2 && line.ends_with("\r\n") {
+                line.pop();
+                line.pop();
+            } else if line.len() >= 1 && line.ends_with("\n") {
+                line.pop();
+            }
             Ok(Some(line))
         }
     }
