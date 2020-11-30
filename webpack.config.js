@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
@@ -13,6 +14,11 @@ module.exports = {
     ]
   },
   plugins: [
+    new CopyPlugin({
+      patterns: [
+        {from: "*.html", context: "ui"},
+      ],
+    }),
     new ForkTsCheckerWebpackPlugin(),
   ],
   resolve: {
