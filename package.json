@@ -1,0 +1,33 @@
+{
+  "name": "logviewer",
+  "version": "1.0.0",
+  "description": "Log viewer application",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remram44/logviewer.git"
+  },
+  "author": "Remi Rampin <r@remirampin.com>",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/remram44/logviewer/issues"
+  },
+  "homepage": "https://github.com/remram44/logviewer#readme",
+  "dependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/preset-typescript": "^7.12.7",
+    "babel-loader": "^8.2.2",
+    "fork-ts-checker-webpack-plugin": "^6.0.4",
+    "typescript": "^4.1.2",
+    "webpack": "^5.9.0",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
