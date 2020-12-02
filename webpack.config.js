@@ -17,6 +17,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {from: "*.html", context: "ui"},
+        {from: "*.css", context: "ui"},
       ],
     }),
     new ForkTsCheckerWebpackPlugin(),

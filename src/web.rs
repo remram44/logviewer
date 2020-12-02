@@ -16,6 +16,10 @@ pub async fn serve(
         .or(path("bundle.js").and(path::end())
             .map(|| include_bytes!("../ui.dist/bundle.js") as &[u8])
             .with(header("Content-Type", "text/javascript")))
+        // CSS
+        .or(path("index.css").and(path::end())
+            .map(|| include_bytes!("../ui.dist/index.css") as &[u8])
+            .with(header("Content-Type", "text/css")))
         // Log query
         .or(path("api").and(path("query")).and(path::end())
             .map(query))
