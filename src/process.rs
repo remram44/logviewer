@@ -1,39 +1,9 @@
 use std::collections::HashMap;
 use std::io::{Error as IoError};
 
+use crate::{Color, Record};
 use crate::filters::{Condition, Expression, Operation, View};
 use crate::readers::LogReader;
-
-#[cfg_attr(feature = "json", derive(serde_derive::Serialize))]
-pub enum Color {
-    #[cfg_attr(feature = "json", serde(rename = "default"))]
-    Default,
-    #[cfg_attr(feature = "json", serde(rename = "fixed"))]
-    Fixed {
-        color: String,
-    },
-    #[cfg_attr(feature = "json", serde(rename = "fromValue"))]
-    FromValue {
-        value: String,
-    },
-}
-
-#[cfg_attr(feature = "json", derive(serde_derive::Serialize))]
-pub struct Record {
-    pub text: String,
-    pub variables: HashMap<String, String>,
-    pub color: Color,
-}
-
-impl Record {
-    fn new(text: String) -> Record {
-        Record {
-            text,
-            variables: HashMap::new(),
-            color: Color::Default,
-        }
-    }
-}
 
 #[derive(Default)]
 struct FilterInner {
