@@ -1,16 +1,27 @@
 use regex::Regex;
+#[cfg(feature = "json")]
+use serde_derive::{Serialize, Deserialize};
 use std::collections::HashMap;
 use std::fmt::Debug;
-#[cfg(feature = "json")]
-use serde_json::Value;
 
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub enum Operation {
-    If(Condition, Vec<Operation>, Vec<Operation>),
-    Set(String, Expression),
+    If {
+        condition: Condition,
+        #[cfg_attr(feature = "json", serde(rename = "then"))]
+        then_ops: Vec<Operation>,
+        #[cfg_attr(feature = "json", serde(rename = "else"))]
+        else_ops: Vec<Operation>,
+    },
+    Set {
+        target: String,
+        expression: Expression,
+    },
     ColorBy(Expression),
     SkipRecord,
 }
 
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub enum Expression {
     Record,
     Var(String),
@@ -18,8 +29,12 @@ pub enum Expression {
     Constant(String),
 }
 
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize), serde(rename_all = "camelCase"))]
 pub enum Condition {
-    Match(Expression, Pattern),
+    Match {
+        expression: Expression,
+        pattern: Pattern,
+    },
 }
 
 pub struct Pattern {
@@ -29,7 +44,55 @@ pub struct Pattern {
     all_groups: Vec<Option<String>>,
 }
 
-pub struct View(pub Vec<Operation>);
+#[cfg(feature = "json")]
+impl serde::ser::Serialize for Pattern {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::ser::Serializer
+    {
+        serializer.serialize_str(&self.regex)
+    }
+}
+
+#[cfg(feature = "json")]
+impl<'d> serde::de::Deserialize<'d> for Pattern {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::de::Deserializer<'d>,
+    {
+        struct RegexVisitor;
+
+        impl<'d> serde::de::Visitor<'d> for RegexVisitor {
+            type Value = String;
+
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                f.write_str("regex")
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<String, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(value.to_owned())
+            }
+
+            fn visit_string<E>(self, value: String) -> Result<String, E>
+            where
+                E: serde::de::Error
+            {
+                Ok(value)
+            }
+        }
+
+        let regex = deserializer.deserialize_string(RegexVisitor)?;
+        Ok(Pattern::new(regex))
+    }
+}
+
+#[cfg_attr(feature = "json", derive(Serialize, Deserialize))]
+pub struct View {
+    pub operations: Vec<Operation>,
+}
 
 impl Pattern {
     pub fn new(regex: String) -> Pattern {
@@ -99,7 +162,7 @@ impl Operation {
         else_ops: &Vec<Operation>,
     ) -> std::fmt::Result {
         match condition {
-            Condition::Match(expression, pattern) => {
+            Condition::Match { expression, pattern } => {
                 expression.print(f)?;
                 write!(f, " match \"{}\"", pattern.regex)?;
             }
@@ -114,7 +177,7 @@ impl Operation {
             }
         }
         let else_if = if else_ops.len() == 1 {
-            if let Operation::If(condition, then_ops, else_ops) = &else_ops[0] {
+            if let Operation::If { condition, then_ops, else_ops } = &else_ops[0] {
                 idt(f, indent)?;
                 write!(f, "ELIF ")?;
                 self.print_if_branch(f, indent, condition, then_ops, else_ops)?;
@@ -141,12 +204,12 @@ impl Operation {
         indent: usize,
     ) -> std::fmt::Result {
         match self {
-            Operation::If(condition, then_ops, else_ops) => {
+            Operation::If { condition, then_ops, else_ops } => {
                 idt(f, indent)?;
                 write!(f, "IF ")?;
                 self.print_if_branch(f, indent, condition, then_ops, else_ops)?;
             }
-            Operation::Set(target, expression) => {
+            Operation::Set { target, expression } => {
                 idt(f, indent)?;
                 write!(f, "SET {} = ", target)?;
                 expression.print(f)?;
@@ -168,22 +231,12 @@ impl Operation {
 }
 
 impl View {
-    #[cfg(feature = "json")]
-    pub fn from_json(json: &Value) -> Result<View, &'static str> {
-        crate::json::read_view(json)
-    }
-
-    #[cfg(feature = "json")]
-    pub fn to_json(&self) -> Value {
-        todo!() // JSON
-    }
-
     pub fn print(
         &self,
         f: &mut std::fmt::Formatter,
         indent: usize,
     ) -> std::fmt::Result {
-        for operation in &self.0 {
+        for operation in &self.operations {
             operation.print(f, indent)?;
         }
         Ok(())

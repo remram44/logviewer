@@ -2,20 +2,22 @@
   "operations": [
     {
       "if": {
-        "match": {
-          "expression": {
-            "record": {}
-          },
-          "pattern": "^(?P<time>[0-9TZ-]+) (?P<message>.*)$"
+        "condition": {
+          "match": {
+            "expression": "record",
+            "pattern": "^(?P<time>[0-9TZ:-]+) (?P<message>.*)$"
+          }
         },
         "then": [
           {
             "if": {
-              "match": {
-                "expression": {
-                  "variable": "message"
-                },
-                "pattern": "^(?P<client>[0-9]+(\\.[0-9]+){3}) ([^ ]+ ){2}\\[.+\\] \"(?P<vhost>[^\"]+)\""
+              "condition": {
+                "match": {
+                  "expression": {
+                    "var": "message"
+                  },
+                  "pattern": "^(?P<client>[0-9]+(\\.[0-9]+){3}) ([^ ]+ ){2}\\[.+\\] \"(?P<vhost>[^\"]+)\""
+                }
               },
               "then": [
                 {
@@ -30,12 +32,16 @@
               "else": [
                 {
                   "if": {
-                    "match": {
-                      "expression": {
-                        "variable": "message"
-                      },
-                      "pattern": "^service=(?P<service>[^ ]+) (?P<message>.*)$"
-                    }
+                    "condition": {
+                      "match": {
+                        "expression": {
+                          "var": "message"
+                        },
+                        "pattern": "^service=(?P<service>[^ ]+) (?P<message>.*)$"
+                      }
+                    },
+                    "then": [],
+                    "else": []
                   }
                 }
               ]
@@ -43,7 +49,7 @@
           },
           {
             "colorBy": {
-              "variable": "service"
+              "var": "service"
             }
           }
         ],
@@ -52,7 +58,7 @@
             "set": {
               "target": "time",
               "expression": {
-                "lastVariableValue": "time"
+                "lastVarValue": "time"
               }
             }
           }
@@ -61,33 +67,35 @@
     },
     {
       "if": {
-        "match": {
-          "expression": {
-            "record": {}
-          },
-          "pattern": "\\bERROR\\b"
+        "condition": {
+          "match": {
+            "expression": "record",
+            "pattern": "\\bERROR\\b"
+          }
         },
         "then": [
           {
             "set": {
-              "target": "error"
+              "target": "error",
+              "expression": {
+                "constant": ""
+              }
             }
           }
         ],
         "else": [
           {
             "if": {
-              "match": {
-                "expression": {
-                  "record": {}
-                },
-                "pattern": "\\bDEBUG\\b"
+              "condition": {
+                "match": {
+                  "expression": "record",
+                  "pattern": "\\bDEBUG\\b"
+                }
               },
               "then": [
-                {
-                  "skip": {}
-                }
-              ]
+                "skipRecord"
+              ],
+              "else": []
             }
           }
         ]

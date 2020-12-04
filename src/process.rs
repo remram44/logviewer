@@ -4,12 +4,21 @@ use std::io::{Error as IoError};
 use crate::filters::{Condition, Expression, Operation, View};
 use crate::readers::LogReader;
 
+#[cfg_attr(feature = "json", derive(serde_derive::Serialize))]
 pub enum Color {
+    #[cfg_attr(feature = "json", serde(rename = "default"))]
     Default,
-    Fixed(String),
-    FromValue(String),
+    #[cfg_attr(feature = "json", serde(rename = "fixed"))]
+    Fixed {
+        color: String,
+    },
+    #[cfg_attr(feature = "json", serde(rename = "fromValue"))]
+    FromValue {
+        value: String,
+    },
 }
 
+#[cfg_attr(feature = "json", derive(serde_derive::Serialize))]
 pub struct Record {
     pub text: String,
     pub variables: HashMap<String, String>,
@@ -59,9 +68,9 @@ impl FilterInner {
     ) -> bool {
         for operation in operations {
             match operation {
-                Operation::If(condition, then_ops, else_ops) => {
+                Operation::If { condition, then_ops, else_ops } => {
                     match condition {
-                        Condition::Match(expression, pattern) => {
+                        Condition::Match { expression, pattern } => {
                             let value = self.evaluate(expression, &record);
                             if let Some(m) =  pattern.match_string(&value) {
                                 for (key, value) in m {
@@ -78,13 +87,13 @@ impl FilterInner {
                         }
                     }
                 }
-                Operation::Set(target, expression) => {
+                Operation::Set { target, expression } => {
                     let value = self.evaluate(expression, &record);
                     self.set_variable(record, target.to_owned(), value);
                 }
                 Operation::ColorBy(expression) => {
                     let value = self.evaluate(expression, &record);
-                    record.color = Color::FromValue(value);
+                    record.color = Color::FromValue { value };
                 }
                 Operation::SkipRecord => {
                     return false;
@@ -106,7 +115,7 @@ impl<R: LogReader> FilteredLogIterator<R> {
             let mut record = Record::new(text);
 
             // Apply filters
-            if !self.filter.apply_operations(&mut record, &self.view.0) {
+            if !self.filter.apply_operations(&mut record, &self.view.operations) {
                 // Skipped
                 continue
             }
