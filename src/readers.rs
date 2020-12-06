@@ -1,5 +1,6 @@
 use std::fs;
 use std::io::{BufRead, BufReader, Error as IoError, Seek, SeekFrom};
+use std::path::Path;
 
 pub trait LogReader {
     fn seek(&mut self, pos: u64) -> Result<(), IoError>;
@@ -13,9 +14,9 @@ pub struct LogFile {
 }
 
 impl LogFile {
-    pub fn open(filename: &str) -> Result<LogFile, IoError> {
+    pub fn open<P: AsRef<Path>>(path: P) -> Result<LogFile, IoError> {
         Ok(LogFile {
-            file: BufReader::new(fs::File::open(filename)?),
+            file: BufReader::new(fs::File::open(path)?),
             pos: 0,
         })
     }
