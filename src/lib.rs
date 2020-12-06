@@ -1,6 +1,9 @@
 pub mod filters;
 mod process;
 pub mod readers;
+#[cfg(feature = "web")]
+pub mod web;
+
 #[cfg(test)]
 mod tests;
 

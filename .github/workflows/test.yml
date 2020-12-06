@@ -30,4 +30,4 @@ jobs:
     - name: Run tests
       run: cargo test -- --show-output
     - name: Run program
-      run: cargo run --bin cli
+      run: cargo run -- process test.json test.log

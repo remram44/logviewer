@@ -2,15 +2,6 @@ use warp::Filter;
 use warp::path;
 use warp::reply::Reply;
 
-fn main() {
-    let mut runtime = tokio::runtime::Builder::new()
-        .basic_scheduler()
-        .enable_all()
-        .build()
-        .unwrap();
-    runtime.block_on(serve([127, 0, 0, 1].into(), 8000));
-}
-
 pub async fn serve(
     host: std::net::IpAddr,
     port: u16,
