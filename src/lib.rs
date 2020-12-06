@@ -1,6 +1,8 @@
 pub mod filters;
 mod process;
 pub mod readers;
+#[cfg(test)]
+mod tests;
 
 use std::collections::HashMap;
 
